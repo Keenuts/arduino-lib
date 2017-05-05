@@ -5,6 +5,7 @@
 #define OUT (1)
 #define IN  (0)
 
+#define DATA_2 (2)
 #define DATA_3 (3)
 #define DATA_4 (4)
 #define DATA_5 (5)
@@ -16,6 +17,8 @@
 #define DATA_11 (11)
 #define DATA_12 (12)
 #define DATA_13 (13)
+
+#define ANALOG_1 (14)
 #define LED (13)
 
 void digitalWrite(uint8_t pin, uint8_t value);
@@ -80,6 +83,13 @@ void setDirection(uint8_t pin, uint8_t dir)
 			DDRB |=  _BV(pin - 8);
 		else
 			DDRB &= ~_BV(pin - 8);
+	}
+	else if (pin >= 14 && pin <= 18)
+	{
+		if (dir)
+			DDRC |=  _BV(pin - 14);
+		else
+			DDRC &= ~_BV(pin - 14);
 	}
 }
 
