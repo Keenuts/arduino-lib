@@ -9,8 +9,6 @@
 
 int main (void)
 {
-	setDirection(13, OUT);
-	digitalWrite(13, 1);
 	power_on();
 
 	set_mode(WRITE);

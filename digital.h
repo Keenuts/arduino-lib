@@ -18,7 +18,15 @@
 #define DATA_12 12
 #define DATA_13 13
 
-#define ANALOG_1 14
+#define ANALOG_0 14
+#define ANALOG_1 15
+#define ANALOG_2 16
+#define ANALOG_3 17
+#define ANALOG_4 18
+#define ANALOG_5 19
+#define ANALOG_6 20
+#define ANALOG_7 21
+
 #define LED 13
 
 void digitalWrite(uint8_t pin, uint8_t value);

@@ -16,7 +16,7 @@ void digitalWrite(uint8_t pin, uint8_t value)
 		else
 			PORTB &= ~_BV(pin - 8);
 	}
-	else if (pin >= 14 && pin <= 19)
+	else if (pin >= 14 && pin <= 21)
 	{
 		if (value)
 			PORTC |= _BV(pin - 14);
@@ -41,7 +41,7 @@ void setDirection(uint8_t pin, uint8_t dir)
 		else
 			DDRB &= ~_BV(pin - 8);
 	}
-	else if (pin >= 14 && pin <= 19)
+	else if (pin >= 14 && pin <= 21)
 	{
 		if (dir)
 			DDRC |=  _BV(pin - 14);
@@ -56,7 +56,7 @@ uint8_t digitalRead(uint8_t pin)
 		return (PIND >> pin) & 1;
 	else if (pin >= 8 && pin <= 13)
 		return (PINB >> (pin - 8)) & 1;
-	else if (pin >= 14 && pin <= 19)
+	else if (pin >= 14 && pin <= 21)
 		return (PINC >> (pin - 14)) & 1;
 	return 0;
 }
