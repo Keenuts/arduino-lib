@@ -75,6 +75,6 @@ void power_on() {
 
 void power_off() {
 	digitalWrite(ANALOG_0, 0);
-	set_screen_status(0, 0, 0);
+	set_screen_status(0, 1, 1);
 	zero_pins();
 }
