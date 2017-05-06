@@ -26,7 +26,7 @@ static void zero_pins() {
 static void pulse() {
 	digitalWrite(E, 1);
 	digitalWrite(E, 0);
-	_delay_ms(ACK_DELAY);
+	_delay_us(ACK_DELAY);
 }
 
 static void set_screen_status(int on, int cursor, int blink) {
@@ -45,6 +45,7 @@ void clear() {
 
 	digitalWrite(DATA0, 1);
 	pulse();
+	_delay_ms(2.2);
 }
 
 void write_char(uint8_t c) {
@@ -53,11 +54,12 @@ void write_char(uint8_t c) {
 
 	digitalWrite(E, 1);
 	digitalWrite(E, 0);
-	_delay_ms(ACK_DELAY);
+	_delay_us(50);
 }
 
 void set_mode(uint8_t mode) {
 	digitalWrite(RS, mode);
+	_delay_us(50);
 }
 
 void power_on() {
