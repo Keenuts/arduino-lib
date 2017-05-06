@@ -7,8 +7,8 @@ BIN=led
 
 all: export
 
-*.o:
-	$(CC) $(CFLAGS) $> -c
+%.o: %.c
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 main: $(OBJ)
 	$(CC) $(CFLAGS) ${OBJ} -o $(BIN)
