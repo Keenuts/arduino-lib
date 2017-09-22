@@ -1,11 +1,11 @@
 CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -Wall -Werror -Wextra
 
-OBJ=digital.o lcd.o led.o
+OBJ=digital.o lcd.o led.o serial.o
 BIN=led
 
 
-all: export
+all: main
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) -o $@ $<

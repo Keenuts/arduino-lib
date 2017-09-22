@@ -29,9 +29,9 @@
 
 #define LED 13
 
-void digitalWrite(uint8_t pin, uint8_t value);
-uint8_t digitalRead(uint8_t pin);
-void setDirection(uint8_t pin, uint8_t dir);
+void digital_write(uint8_t pin, uint8_t value);
+uint8_t digital_read(uint8_t pin);
+void set_direction(uint8_t pin, uint8_t dir);
 
 /*
  * direction: low = input | high = output

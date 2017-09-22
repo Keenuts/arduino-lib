@@ -1,6 +1,6 @@
 #include "digital.h"
 
-void digitalWrite(uint8_t pin, uint8_t value)
+void digital_write(uint8_t pin, uint8_t value)
 {
 	if (pin <= 7)
 	{
@@ -25,7 +25,7 @@ void digitalWrite(uint8_t pin, uint8_t value)
 	}
 }
 
-void setDirection(uint8_t pin, uint8_t dir)
+void set_direction(uint8_t pin, uint8_t dir)
 {
 	if (pin <= 7)
 	{
@@ -50,7 +50,7 @@ void setDirection(uint8_t pin, uint8_t dir)
 	}
 }
 
-uint8_t digitalRead(uint8_t pin)
+uint8_t digital_read(uint8_t pin)
 {
 	if (pin <= 7)
 		return (PIND >> pin) & 1;
