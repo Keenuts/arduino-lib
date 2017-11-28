@@ -1,11 +1,14 @@
-#include "serial.h"
 
 #define F_CPU 16000000UL
 #define BAUD 9600
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <util/setbaud.h>
 #include <stdio.h>
+
+#include "digital.h"
+#include "serial.h"
 
 FILE uart_output;
 FILE uart_input;
@@ -42,4 +45,41 @@ void uart_initialize(void)
     uart_input = input;
     stdout = &uart_output;
     stdin = &uart_input;
+}
+
+
+#if 0
+ISR(ADC_vect)
+{
+    glob = 1;
+}
+#endif
+
+void softserial_init(softserial_t *ctx)
+{
+    set_direction(ctx->tx, OUT);
+    set_direction(ctx->rx, IN);
+
+    digital_write(ctx->tx, 1);
+}
+
+uint8_t softserial_read(softserial_t *ctx)
+{
+
+    (void)ctx;
+    return 0;
+}
+
+void softserial_write(softserial_t *ctx, uint8_t data)
+{
+    (void)ctx;
+    (void)data;
+}
+
+uint8_t softserial_available(softserial_t *ctx)
+{
+    uint8_t value = digital_read(ctx->rx);
+    if (!value)
+        return 1;
+    return 0;
 }
