@@ -2,18 +2,24 @@
 
 #include <stdio.h>
 
-void uart_initialize(void);
-int uart_putchar(char c, FILE *stream);
-int uart_getchar(FILE *stream);
-
-typedef struct _softserial_t
+typedef struct
 {
-    uint8_t tx;
-    uint8_t rx;
-    uint16_t speed;
-} softserial_t;
+    volatile uint8_t *io_reg;
+    volatile uint8_t *state_reg;
 
-void softserial_init(softserial_t *ctx);
-uint8_t softserial_read(softserial_t *ctx);
-void softserial_write(softserial_t *ctx, uint8_t data);
-uint8_t softserial_available(softserial_t *ctx);
+    uint8_t tx_ready_field;
+    uint8_t rx_ready_field;
+    struct isr_rx_queue *queue;
+} serial_t;
+
+serial_t initialize_serial_0(uint32_t baudrate);
+serial_t initialize_serial_1(uint32_t baudrate);
+serial_t initialize_serial_2(uint32_t baudrate);
+
+int serial_count_available(serial_t serial);
+unsigned char serial_get_char(serial_t serial);
+void serial_put_char(serial_t serial, char c);
+
+
+void serial_init_usb(serial_t *out, serial_t *in);
+void serial_setup_stdio(serial_t out, serial_t in);
