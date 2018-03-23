@@ -18,18 +18,21 @@
 #define E DATA_4
 #define ACK_DELAY 1
 
-static void zero_pins() {
+static void zero_pins()
+{
 	for (uint32_t i = 0; i < 8; i++)
 		digital_write(DATA0 + i, 0);
 }
 
-static void pulse() {
+static void pulse()
+{
 	digital_write(E, 1);
 	digital_write(E, 0);
 	_delay_us(ACK_DELAY);
 }
 
-static void set_screen_status(int on, int cursor, int blink) {
+static void set_screen_status(int on, int cursor, int blink)
+{
 	zero_pins();
 
 	digital_write(DATA0, blink);
@@ -40,7 +43,8 @@ static void set_screen_status(int on, int cursor, int blink) {
 	pulse();
 }
 
-void clear() {
+void clear()
+{
 	zero_pins();
 
 	digital_write(DATA0, 1);
@@ -48,7 +52,8 @@ void clear() {
 	_delay_ms(2.2);
 }
 
-void write_char(uint8_t c) {
+void write_char(uint8_t c)
+{
 	for (uint8_t i = 0; i < 8; i++, c = c >> 1)
 		digital_write(DATA0 + i, c & 1);
 
@@ -57,16 +62,18 @@ void write_char(uint8_t c) {
 	_delay_us(50);
 }
 
-void set_mode(uint8_t mode) {
+void set_mode(uint8_t mode)
+{
 	digital_write(RS, mode);
 	_delay_us(50);
 }
 
-void power_on() {
+void power_on()
+{
 	set_direction(ANALOG_0, OUT);
 	for (uint8_t i = 0; i < 11; i++)
 		set_direction(DATA_2 + i, OUT);
-	
+
 	zero_pins();
 	set_screen_status(1, 0, 0);
 	clear();
@@ -75,7 +82,8 @@ void power_on() {
 	digital_write(ANALOG_0, 1);
 }
 
-void power_off() {
+void power_off()
+{
 	digital_write(ANALOG_0, 0);
 	set_screen_status(0, 1, 1);
 	zero_pins();

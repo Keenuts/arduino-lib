@@ -10,8 +10,7 @@
 #include "multiplexer.h"
 #include "serial.h"
 
- 
-int main (void)
+int main(void)
 {
 	serial_t out, in, bt_serial;
 
@@ -27,8 +26,7 @@ int main (void)
 		_delay_ms(1000);
 		serial_out(bt_serial, "AT");
 		_delay_ms(1000);
-		while (serial_count_available(bt_serial))
-		{
+		while (serial_count_available(bt_serial)) {
 			char c = serial_get_char(bt_serial);
 			if (!c)
 				continue;
