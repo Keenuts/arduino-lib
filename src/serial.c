@@ -6,23 +6,23 @@
 #include "serial.h"
 
 #if defined(__AVR_ATmega2560__)
-#ifndef F_CPU
-#define F_CPU 16000000UL
-#endif
-#define MAX_BAUDRATE 57600
-#define CALC_BAUDRATE(B) ((F_CPU/(16UL * B)) - 1)
+	#ifndef F_CPU
+		#define F_CPU 16000000UL
+	#endif
+	#define MAX_BAUDRATE 57600
+	#define CALC_BAUDRATE(B) ((F_CPU/(16UL * B)) - 1)
 
 #elif defined(__AVR_ATmega328P__)
-#ifndef F_CPU
-#define F_CPU 8000000UL
-#endif
-#define MAX_BAUDRATE 9600
-#define CALC_BAUDRATE(B) (F_CPU/(16UL * B))
+	#ifndef F_CPU
+		#define F_CPU 8000000UL
+	#endif
+	#define MAX_BAUDRATE 9600
+	#define CALC_BAUDRATE(B) (F_CPU/(16UL * B))
 #else
-#error "Unsupported architecture"
+	#error "Unsupported architecture"
 #endif
 
-#define RX_QUEUE_SIZE 32
+#define RX_QUEUE_SIZE 64
 struct isr_rx_queue {
 	uint16_t start, size;
 	char queue[RX_QUEUE_SIZE];
@@ -77,9 +77,10 @@ serial_t initialize_serial_1(uint32_t baudrate)
 	s.tx_ready_field = UDRE1;
 	s.rx_ready_field = RXC1;
 	s.queue = &__rx1_queue;
+	__builtin_memset(&__rx1_queue, 0, sizeof(__rx1_queue));
 
-	__rx0_queue.start = 0;
-	__rx0_queue.size = 0;
+	__rx1_queue.start = 0;
+	__rx1_queue.size = 0;
 
 	return s;
 }
@@ -101,6 +102,8 @@ serial_t initialize_serial_2(uint32_t baudrate)
 
 	__rx2_queue.start = 0;
 	__rx2_queue.size = 0;
+
+	UDR2 = 'A';
 
 	return s;
 }
@@ -133,8 +136,11 @@ uint32_t serial_out(serial_t serial, const char *str)
 {
 	uint32_t i = 0;
 
-	for (; str[i] != 0; i++)
+	for (; str[i] != 0; i++) {
+		if (str[i] == '\n')
+			serial_put_char(serial, '\r');
 		serial_put_char(serial, str[i]);
+	}
 
 	return i;
 }
@@ -162,7 +168,7 @@ void serial_init_usb(serial_t * out, serial_t * in)
 #else
 	(void)out;
 	(void)in;
-#error "Unusupported architecture"
+	#error "Unusupported architecture"
 #endif
 
 }
@@ -181,17 +187,22 @@ void serial_setup_stdio(serial_t out, serial_t in)
 	__stdin_serial = in;
 }
 
-#define GENERATES_ISR_RX(Isr, Rx, UCSRA, RXC, UDR)               \
-ISR(Isr)                                                         \
-{                                                                \
-    uint16_t id = (Rx.start + Rx.size) % RX_QUEUE_SIZE;          \
-    Rx.queue[id] = UDR;                                          \
-    if (Rx.size < RX_QUEUE_SIZE)                                 \
-        Rx.size++;                                               \
+#define GENERATES_ISR_RX(Isr, Rx, UCSRA, RXC, UDR)			\
+ISR(Isr)								\
+{									\
+	uint16_t id = (Rx.start + Rx.size) % RX_QUEUE_SIZE;		\
+	if (Rx.size < RX_QUEUE_SIZE) {					\
+		Rx.queue[id] = UDR;					\
+		Rx.size++;						\
+	}								\
 }
 
-#if defined(__AVR_ATmega2560__)
-GENERATES_ISR_RX(USART0_RX_vect, __rx0_queue, UCSR0A, RXC0, UDR0);
-GENERATES_ISR_RX(USART1_RX_vect, __rx1_queue, UCSR1A, RXC1, UDR1);
-GENERATES_ISR_RX(USART2_RX_vect, __rx2_queue, UCSR2A, RXC2, UDR2);
+#if defined(__AVR_ATmega328P__)
+	GENERATES_ISR_RX(USART_RX_vect, __rx0_queue, UCSR0A, RXC0, UDR0);
+#elif defined(__AVR_ATmega2560__)
+	GENERATES_ISR_RX(USART0_RX_vect, __rx0_queue, UCSR0A, RXC0, UDR0);
+	GENERATES_ISR_RX(USART1_RX_vect, __rx1_queue, UCSR1A, RXC1, UDR1);
+	GENERATES_ISR_RX(USART2_RX_vect, __rx2_queue, UCSR2A, RXC2, UDR2);
+#else
+	#error "Unsupported archi"
 #endif
