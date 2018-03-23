@@ -13,22 +13,28 @@
  
 int main (void)
 {
-    serial_t out, in, bt_serial;
+	serial_t out, in, bt_serial;
 
-    serial_init_usb(&out, &in);
-    serial_setup_stdio(out, in);
-    bt_serial = initialize_serial_2(9600);
-    
-    sei();
+	serial_init_usb(&out, &in);
+	serial_setup_stdio(out, in);
 
-    puts("Hello the " __DATE__ " at " __TIME__);
+	bt_serial = initialize_serial_1(9600);
+	sei();
 
-    while (1) {
-        while (serial_count_available(bt_serial))
-        {
-            char c = serial_get_char(bt_serial);
-            putchar(c);
-            serial_put_char(bt_serial, c);
-        }
-    }
+	puts("Hello the " __DATE__ " at " __TIME__);
+
+	while (1) {
+		_delay_ms(1000);
+		serial_out(bt_serial, "AT");
+		_delay_ms(1000);
+		while (serial_count_available(bt_serial))
+		{
+			char c = serial_get_char(bt_serial);
+			if (!c)
+				continue;
+
+			putchar(c);
+		}
+		puts("--");
+	}
 }

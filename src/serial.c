@@ -6,16 +6,18 @@
 #include "serial.h"
 
 #if defined(__AVR_ATmega2560__)
-    #define F_CPU 16000000UL
-    #define MAX_BAUDRATE 57600
-    #define CALC_BAUDRATE(B) ((F_CPU/(16UL * B)) - 1)
+	#ifndef F_CPU
+		#define F_CPU 16000000UL
+	#endif
+	#define MAX_BAUDRATE 57600
+	#define CALC_BAUDRATE(B) ((F_CPU/(16UL * B)) - 1)
 
-#elif defined(__AVR_ATmega328p)
-    #warning "You need to test this on a 328p"
-    #define F_CPU 16000000UL
-    #define MAX_BAUDRATE 9600
-    #define CALC_BAUDRATE(B) (F_CPU/(16UL * B))
-
+#elif defined(__AVR_ATmega328P__)
+	#ifndef F_CPU
+		#define F_CPU 8000000UL
+	#endif
+	#define MAX_BAUDRATE 9600
+	#define CALC_BAUDRATE(B) (F_CPU/(16UL * B))
 #else
     #error "Unsupported architecture"
 #endif
@@ -60,6 +62,8 @@ serial_t initialize_serial_0(uint32_t baudrate)
     return s;
 }
 
+#if defined(__AVR_ATmega2560__)
+
 serial_t initialize_serial_1(uint32_t baudrate)
 {
     UBRR1H = CALC_BAUDRATE(baudrate) >> 8;
@@ -102,6 +106,8 @@ serial_t initialize_serial_2(uint32_t baudrate)
     return s;
 }
 
+#endif
+
 int serial_count_available(serial_t serial)
 {
     return serial.queue->size;
@@ -124,6 +130,16 @@ unsigned char serial_get_char(serial_t serial)
     return c;
 }
 
+uint32_t serial_out(serial_t serial, const char* str)
+{
+	uint32_t i = 0;
+
+	for (; str[i] != 0; i++)
+		serial_put_char(serial, str[i]);
+
+	return i;
+}
+
 static int io_putchar(char c, FILE *stream)
 {
     if (stream == &__stdout)
@@ -140,11 +156,13 @@ static int io_getchar(FILE *stream)
 
 void serial_init_usb(serial_t *out, serial_t *in)
 {
-#if defined(__AVR_ATmega2560__) || defined(__AVR__ATmega328p)
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega328P__)
     serial_t s = initialize_serial_0(MAX_BAUDRATE);
     *out = s;
     *in = s;
 #else
+    (void)out;
+    (void)in;
     #error "Unusupported architecture"
 #endif
 
@@ -173,6 +191,9 @@ ISR(Isr)                                                         \
         Rx.size++;                                               \
 }
 
-GENERATES_ISR_RX(USART0_RX_vect, __rx0_queue, UCSR0A, RXC0, UDR0);
-GENERATES_ISR_RX(USART1_RX_vect, __rx1_queue, UCSR1A, RXC1, UDR1);
-GENERATES_ISR_RX(USART2_RX_vect, __rx2_queue, UCSR2A, RXC2, UDR2);
+
+#if defined(__AVR_ATmega2560__)
+	GENERATES_ISR_RX(USART0_RX_vect, __rx0_queue, UCSR0A, RXC0, UDR0);
+	GENERATES_ISR_RX(USART1_RX_vect, __rx1_queue, UCSR1A, RXC1, UDR1);
+	GENERATES_ISR_RX(USART2_RX_vect, __rx2_queue, UCSR2A, RXC2, UDR2);
+#endif

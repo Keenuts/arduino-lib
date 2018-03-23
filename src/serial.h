@@ -19,6 +19,7 @@ serial_t initialize_serial_2(uint32_t baudrate);
 int serial_count_available(serial_t serial);
 unsigned char serial_get_char(serial_t serial);
 void serial_put_char(serial_t serial, char c);
+uint32_t serial_out(serial_t serial, const char* str);
 
 
 void serial_init_usb(serial_t *out, serial_t *in);

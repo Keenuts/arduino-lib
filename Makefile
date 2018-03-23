@@ -1,8 +1,6 @@
-DEPS=sdl
-BIN=lib4k.so
-
 CC=avr-gcc
 CFLAGS=-O3 -DF_CPU=16000000UL -mmcu=atmega2560 -Wall -Werror -Wextra
+#CFLAGS=-O3 -DF_CPU=8000000UL -mmcu=atmega328p -Wall -Werror -Wextra
 
 vpath %.c src
 vpath %.h include
@@ -14,6 +12,7 @@ O_FILES=$(foreach f,$(C_FILES:.c=.o),build/$(subst /,_,$(f)))
 BIN=core
 
 build/src_%.o: %.c
+	@mkdir -p ./build
 	@echo $(subst build/,,$@)
 	@$(CC) -c $(CFLAGS) -o build/$(subst build/,,$@) $<
 
