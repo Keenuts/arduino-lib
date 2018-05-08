@@ -1,6 +1,6 @@
 CC=avr-gcc
-#CFLAGS=-O3 -DF_CPU=16000000UL -mmcu=atmega2560 -Wall -Werror -Wextra
-CFLAGS=-O3 -DF_CPU=8000000UL -mmcu=atmega328p -Wall -Werror -Wextra
+CFLAGS=-O3 -DF_CPU=16000000UL -mmcu=atmega2560 -Wall -Werror -Wextra
+#CFLAGS=-O3 -DF_CPU=8000000UL -mmcu=atmega328p -Wall -Werror -Wextra
 
 vpath %.c src
 vpath %.h include
@@ -24,10 +24,10 @@ main: $(O_FILES)
 
 export: main
 	avr-objcopy -O ihex -R .eeprom $(BIN) $(BIN).hex
-#	avrdude -F -V -c wiring -p atmega2560 -P /dev/ttyUSB0 -b115200 \
-#	-D -U flash:w:$(BIN).hex
-	avrdude -F -V -c arduino -p ATMEGA328P -P /dev/ttyUSB0 -b57600 \
+	avrdude -F -V -c wiring -p atmega2560 -P /dev/ttyUSB0 -b115200 \
 	-D -U flash:w:$(BIN).hex
+	#avrdude -F -V -c arduino -p ATMEGA328P -P /dev/ttyUSB0 -b57600 \
+	#-D -U flash:w:$(BIN).hex
 
 proper:
 	$(RM) $(O_FILES)
